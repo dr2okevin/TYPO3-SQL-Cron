@@ -1,0 +1,15 @@
+# OS generated files
+__*
+_.*
+._*
+.Trashes
+ehthumbs.db
+Thumbs.db
+Thumbs.db:*
+
+# Files from IDE 
+.project
+~*.php.html
+*.bak
+*.swp
+.settings
