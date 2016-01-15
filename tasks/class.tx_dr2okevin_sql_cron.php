@@ -9,15 +9,27 @@ class tx_dr2okevin_sql_cron extends tx_scheduler_Task {
         $gesamttime = $gesamttime * 1000; //Convert s in ms
         if($res)
         {
-            $GLOBALS['BE_USER']->writeLog(1, 0, 0, 0, 'SQL: '.$this->sql.' ['.$gesamttime.' ms]', 'SQL Cron', $this->sql);
-            #t3lib_div::sysLog('SQL: '.$this->sql, 'dr2okevin_sql_cron', '0');
+            $log['type'] = 4; //Modules: This is the mode you may use for extensions having backend module functionality
+            $log['action'] = 0; //not available
+            $log['error'] = 0; //message, a notice of an action that happened.
+            $log['details_nr'] = 0; //0 is a value that means the message is not supposed to be translated
+            $log['details'] = str_replace('%','%%','SQL Cron: '.$this->sql.' ('.$gesamttime.' ms)'); //The log message text
+            $log['data'] = NULL;
+            $GLOBALS['BE_USER']->writeLog($log['type'],$log['action'],$log['error'],$log['details_nr'],$log['details'],$log['data']);
+
             return true;
         }
         else
         {
-            $error = $GLOBALS['TYPO3_DB']->sql_error();
-            $GLOBALS['BE_USER']->writeLog(1, 0, 1, 0, 'SQL Fehlgeschlagen: '.$this->sql.' ['.$error.'] ['.$gesamttime.' ms]', 'SQL Cron', $this->sql);
-            #t3lib_div::sysLog('SQL Fehlgeschlagen: '.$this->sql, 'dr2okevin_sql_cron', '3');
+            $sqlerror = $GLOBALS['TYPO3_DB']->sql_error();
+            $log['type'] = 4; //Modules: This is the mode you may use for extensions having backend module functionality
+            $log['action'] = 0; //not available
+            $log['error'] = 2; //System Error
+            $log['details_nr'] = 0; //0 is a value that means the message is not supposed to be translated
+            $log['details'] = str_replace('%','%%','SQL Cron error: '.$this->sql.' ('.$sqlerror.') ('.$gesamttime.' ms)'); //The log message text
+            $log['data'] = NULL;
+            $GLOBALS['BE_USER']->writeLog($log['type'],$log['action'],$log['error'],$log['details_nr'],$log['details'],$log['data']);
+
             return false;
         }
     }
